@@ -1,3 +1,4 @@
+package com.Manuskrill;
 
 public class gameoflife
 {
