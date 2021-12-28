@@ -6,4 +6,8 @@ We will try to make a window-based "Game of Life" by Conway
 
 20.12.2021
 Ideensuche->Entscheidung + erster look auf javaSwing und javaFX
+26.12.2021
+Ca, 2h Javafx gelernt und dokumentiert (Fenster, AlertBox, Window)
+28.12.2021
+26.12.2021 nachgetragen und Java+Javafx+Intellij und Git auf Desktop-Pc installiert
 
