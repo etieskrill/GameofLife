@@ -28,13 +28,13 @@ public class Fenster extends Application /*implements EventHandler<ActionEvent>*
             closeProgram();
         }); //if user uses x on topright to close window  this method is done
 
-        HBox topMenu = new HBox();              //just a layout style (do not use HBox for top menus, this an exampe)
         Button buttonA = new Button("File");  //some buttons to have content
         Button buttonB = new Button("Edit");   //H stands for horizontal
         Button buttonC = new Button("View");
         Button buttonD = new Button("close"); //close button, closeProgram function on bottom of file
         buttonD.setOnAction(e->closeProgram());
 
+        HBox topMenu = new HBox();              //just a layout style (do not use HBox for top menus, this an exampe)
         topMenu.getChildren().addAll(buttonA,buttonB,buttonC, buttonD); //adds all the Buttons to the topMenulayout
 
         VBox leftMenu = new VBox(); //adds vertical layout for sidemenu
@@ -81,7 +81,6 @@ public class Fenster extends Application /*implements EventHandler<ActionEvent>*
             System.out.println( UsernameInput.getText() + passwordInput.getText());
         });
         GridPane.setConstraints(LoginButton, 1, 3);
-
         CheckBox box1 = new CheckBox("Option1");
         CheckBox box2 = new CheckBox("Option2");
         CheckBox box3 = new CheckBox("Option3");
