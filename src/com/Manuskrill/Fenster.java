@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
+import javafx.scene.control.CheckBox;
 
 public class Fenster extends Application /*implements EventHandler<ActionEvent>*/{
     Stage window; //creates stage
@@ -38,7 +39,7 @@ public class Fenster extends Application /*implements EventHandler<ActionEvent>*
 
         VBox leftMenu = new VBox(); //adds vertical layout for sidemenu
         Button button1 = new Button("Go to other scene");   //random Buttons as examples
-        button1.setOnAction(e-> window.setScene(scene2));   //changes scene for this window
+        button1.setOnAction(e-> window.setScene(scene2));      //changes scene for this window
 
         Button button2 = new Button("Alert Button");    //simple alert button
         button2.setOnAction(e-> AlertBox.display("ACHTUNG", "this an alert!")); //AlertBox is the class .diplay opens the class as window (stage)
@@ -60,6 +61,11 @@ public class Fenster extends Application /*implements EventHandler<ActionEvent>*
         TextField UsernameInput = new TextField("Usernamehere");
         GridPane.setConstraints(UsernameInput, 1, 0);
 
+        Label age = new Label("Age:");
+        GridPane.setConstraints(age, 0,2);
+        TextField ageinput = new TextField("Age here");
+        GridPane.setConstraints(ageinput, 1, 2);
+
         Label password = new Label("password:");
         GridPane.setConstraints(password, 0,1);
         TextField passwordInput = new TextField();
@@ -67,10 +73,25 @@ public class Fenster extends Application /*implements EventHandler<ActionEvent>*
         passwordInput.setPromptText("password");
 
         Button LoginButton = new Button("log in");
-        GridPane.setConstraints(LoginButton, 1, 2);
+        LoginButton.setOnAction(e->{
+            if(IsInt(ageinput,ageinput.getText())){
+                System.out.println("nice age bratan");
+            }
 
-        grid.getChildren().addAll(Username, UsernameInput, passwordInput, password, LoginButton);
+            System.out.println( UsernameInput.getText() + passwordInput.getText());
+        });
+        GridPane.setConstraints(LoginButton, 1, 3);
 
+        CheckBox box1 = new CheckBox("Option1");
+        CheckBox box2 = new CheckBox("Option2");
+        CheckBox box3 = new CheckBox("Option3");
+        GridPane.setConstraints(box1, 2, 0);
+        GridPane.setConstraints(box2, 2, 1);
+        GridPane.setConstraints(box3, 2, 2);
+
+        grid.getChildren().addAll(Username, UsernameInput,
+                passwordInput, password,age, ageinput, box1,
+                box2,box3, LoginButton);
 
 
         BorderPane borderPane = new BorderPane(); //BorderPane is a given possible layout -> use google if more questione
@@ -78,11 +99,7 @@ public class Fenster extends Application /*implements EventHandler<ActionEvent>*
         borderPane.setLeft(leftMenu);
         borderPane.setCenter(grid);
 
-
-
         Label label1 = new Label( "Some dummy text");
-
-
 
 
         scene1 = new Scene(borderPane, 600, 400);
@@ -107,6 +124,15 @@ public class Fenster extends Application /*implements EventHandler<ActionEvent>*
         if(answer){
             window.close();
             System.out.println("File was saved");
+        }
+    }
+    private static boolean IsInt(TextField input, String message){ //checks in input is integer
+        try{
+            int age = Integer.parseInt(input.getText());
+            return true;
+        }catch(NumberFormatException e){
+            System.out.println("Error: " +  message + " is not a Number");
+            return false;
         }
     }
 }
