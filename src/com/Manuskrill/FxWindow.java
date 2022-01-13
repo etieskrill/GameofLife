@@ -41,7 +41,7 @@ public class FxWindow extends Application {
         stage.setScene(scene1);
         stage.show();
 
-        TimeUnit.SECONDS.sleep(69420);
+        TimeUnit.SECONDS.sleep(6);
 
         stage.setScene(scene2);
 
