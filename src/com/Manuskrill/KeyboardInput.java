@@ -54,7 +54,8 @@ public class KeyboardInput {
     }
 
     public static void main(String[] args) throws Exception {
-        //System.out.println(Arrays.toString(ControllerEnvironment.getDefaultEnvironment().getControllers())); //Prints all available devices
+        System.out.println(Arrays.toString(ControllerEnvironment.getDefaultEnvironment().getControllers())); //Prints all available devices
+        System.out.println("hallo");
         new KeyboardInput();
     }
 
