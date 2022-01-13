@@ -42,7 +42,7 @@ public class KeyboardInput {
                 } else buffer.append(components[i].getPollData() == 1f);
             }
 
-            System.out.println(buffer.toString());
+            //System.out.println(buffer.toString()); //Shitty debug line
 
             try {
                 Thread.sleep(20);
