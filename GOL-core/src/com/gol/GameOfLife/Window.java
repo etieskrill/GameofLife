@@ -61,7 +61,8 @@ public class Window extends Application {
 
         //Button actions
         enter.setOnAction(e-> {
-            widthBox.getText
+            core.size.width = parseInt(widthField);
+            core.size.height = parseInt(heightField);
         });
 
         //Def edit panel
@@ -93,4 +94,11 @@ public class Window extends Application {
         Application.launch(args);
     }
 
+    public int parseInt(TextField input){ //checks in input is integer
+        try {
+            return Integer.parseInt(input.getText());
+        } catch(NumberFormatException e) {
+            throw new NumberFormatException("suck dick");
+        }
+    }
 }
