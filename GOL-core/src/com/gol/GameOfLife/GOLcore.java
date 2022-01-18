@@ -1,16 +1,17 @@
 package com.gol.GameOfLife;
 
+import java.awt.*;
+
 public class GOLcore {
 
-    public int height = 10;
-    public int width = 10;
+    public Dimension size = new Dimension(50, 50);
 
     public boolean[][] state;
 
     public GOLcore() {
-        state = new boolean[height][width];
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        state = new boolean[size.height][size.width];
+        for (int i = 0; i < size.height; i++) {
+            for (int j = 0; j < size.width; j++) {
                 state[i][j] = false;
             }
         }
