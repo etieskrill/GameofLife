@@ -11,3 +11,5 @@ Ca, 2h Javafx gelernt und dokumentiert (Fenster, AlertBox, Window)
 28.12.2021
 26.12.2021 nachgetragen und Java+Javafx+Intellij und Git auf Desktop-Pc installiert
 10.01.2022 Data validation, checkboxes gelernt
+
+yall ever eaten some BBBEEEEANNNNNSSS

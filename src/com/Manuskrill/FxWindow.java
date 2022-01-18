@@ -24,7 +24,7 @@ public class FxWindow extends Application {
         Group root1 = new Group();
         Group root2 = new Group();
         Scene scene1 = new Scene(root1, width, height);
-        Scene scene2 = new Scene(root2, width, height);
+        Scene scene2 = new Scene(root1, width, height);
 
         Text text = new Text(10, 90, "JavaFX Scene");
         text.setFill(Color.DARKRED);

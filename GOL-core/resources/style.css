@@ -1,0 +1,19 @@
+* {
+	-fx-darkest-grey-color: #323232;
+}
+
+.check-box .box {
+	-fx-background-color: white;
+	-fx-border-color: lightGray;
+	-fx-border-radius: 0;
+	-fx-padding: 2px;
+}
+.check-box .mark {
+ 	-fx-shape: "M1.73, 0";
+}
+.check-box:selected .mark {
+	-fx-background-color: white;
+}
+.check-box:selected .box {
+	-fx-background-color: -fx-darkest-grey-color;
+}

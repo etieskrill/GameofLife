@@ -40,7 +40,7 @@ public class GameOfLifecore
         int[][] future = new int[M][N];
         if(NumGen == 0){}
         else{
-            Thread.sleep(300);
+            Thread.sleep(100);
             // Loop through every cell
             for (int l = 1; l < M - 1; l++)
             {
