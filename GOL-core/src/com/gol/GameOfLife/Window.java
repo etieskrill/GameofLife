@@ -32,6 +32,8 @@ public class Window extends Application {
         TilePane tiles = new TilePane();
         tiles.getChildren().addAll(checkBoxes);
         tiles.setAlignment(Pos.CENTER_LEFT);
+        tiles.setPrefRows(core.height);
+        tiles.setPrefColumns(core.width);
 
         Scene edit = new Scene(tiles, size.getWidth() / 2, size.getHeight() / 2);
         edit.getStylesheets().add(String.valueOf(this.getClass().getResource("/style.css"))); //"file:///C://Users//Etienne//IdeaProjects//GameofLife//GOL-core//resources//style.css"
