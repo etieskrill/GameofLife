@@ -1,10 +1,13 @@
 package com.gol.GameOfLife;
 
+import javafx.application.Application;
+
 import java.awt.*;
 
 public class GOLcore {
 
     public Dimension size = new Dimension(50, 50);
+    public Dimension tileSize = new Dimension(16, 16);
 
     public boolean[][] state;
 
@@ -17,8 +20,10 @@ public class GOLcore {
         }
     }
 
-        public static void main(String[] args) throws InterruptedException {
-            int M = 13, N = 90, NumGen = 80;
+    public static void main(String[] args) throws InterruptedException {
+        Application.launch(FxWindow.class);
+
+            /*int M = 13, N = 90, NumGen = 80;
             // Intiliazing the grid.
             int[][] grid = {{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -105,7 +110,7 @@ public class GOLcore {
                 System.out.println(builder.toString());
                 builder.delete(1,builder.length());
                 nextGeneration(future, M, N,NumGen - 1);//For recursivity
-            }
-        }
+            }*/
+    }
 
 }

@@ -4,8 +4,6 @@ import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 
 public class GameOfLife {
 
@@ -17,13 +15,13 @@ public class GameOfLife {
 
         this.size = new Dimension(init[0].length, init.length);
 
-        Application.launch(FxWindow.class);
+        Application.launch(FxWindowe.class);
 
         //FxWindow.setScene(new Scene(new Group(), 100, 100, ));
 
         TimeUnit.SECONDS.sleep(3);
 
-        FxWindow.setScene(FxWindow.scene2);
+        FxWindowe.setScene(FxWindowe.scene2);
 
     }
 
