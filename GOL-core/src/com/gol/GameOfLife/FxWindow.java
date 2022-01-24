@@ -6,10 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -23,8 +20,9 @@ public class FxWindow extends Application {
 
     public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public final String title = "Game of Life";
-    public boolean showGrid = true;
-    public final int tileGap = 2;
+    public boolean showGrid = false;
+    public int tileGap = 2;
+    public Dimension tileOffset = new Dimension(0, 0);
 
     GOLcore core;
     TilePane editPaneTiles;
@@ -36,9 +34,15 @@ public class FxWindow extends Application {
 
         //Ui elements
         Button mainEditButton = new Button("Edit");
+        Button mainConfirmButton = new Button("Confirm");
 
         Button editSaveButton = new Button("Save");
         Button editEnterButton = new Button("Enter");
+
+        Slider tileWidthSlider = new Slider(0, core.tileSize.width, core.tileSize.width);
+        Slider tileHeightSlider = new Slider(0, core.tileSize.height, core.tileSize.height);
+
+        TextField mainTileGapField = new TextField(Integer.toString(tileGap));
 
         Label widthLabel = new Label("width:");
         widthLabel.setAlignment(Pos.CENTER);
@@ -64,7 +68,7 @@ public class FxWindow extends Application {
         mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
         mainBottomUI.setSpacing(10);
         mainBottomUI.setAlignment(Pos.CENTER);
-        mainBottomUI.getChildren().addAll(mainEditButton);
+        mainBottomUI.getChildren().addAll(mainEditButton, tileWidthSlider, tileHeightSlider, mainTileGapField, mainConfirmButton);
 
         HBox editBottomUI = new HBox();
         editBottomUI.setPadding(new Insets(20, 20, 20, 20));
@@ -77,12 +81,12 @@ public class FxWindow extends Application {
         Canvas canvas = new Canvas(core.size.width * core.tileSize.width, core.size.height * core.tileSize.height);
         StackPane background = new StackPane(canvas);
         background.setStyle("-fx-background-color: BLACK");
-        background.setPadding(new Insets(20, 20, 0, 20));
+        background.setPadding(new Insets(20, 20, 20, 20));
         mainBorder.setCenter(background);
         mainBorder.setBottom(mainBottomUI);
         GraphicsContext graphics = canvas.getGraphicsContext2D();
 
-        refreshMainTiles(graphics, canvas);
+        refreshMainTiles(canvas);
 
         Scene main = new Scene(mainBorder);
 
@@ -127,12 +131,18 @@ public class FxWindow extends Application {
 
             //System.out.println(Arrays.deepToString(core.state)); //Filthy debög
 
-            refreshMainTiles(graphics, canvas);
+            refreshMainTiles(canvas);
             stage.setScene(main);
         });
 
         mainEditButton.setOnAction(e -> { //Edit button in main panel, sets scene to edit panel
             stage.setScene(edit);
+        });
+
+        mainConfirmButton.setOnAction(e -> {
+            core.tileSize = new Dimension((int) tileWidthSlider.getValue(), (int) tileHeightSlider.getValue());
+            tileGap = parseInt(mainTileGapField);
+            refreshMainTiles(canvas);
         });
     }
 
@@ -158,13 +168,17 @@ public class FxWindow extends Application {
         this.editPaneTiles.getChildren().addAll(checkBoxes);
     }
 
-    public void refreshMainTiles(GraphicsContext graphics, Canvas canvas) { //Draws tiles to main panel according to core state
+    public void refreshMainTiles(Canvas canvas) { //Draws tiles to main panel according to core state
+        GraphicsContext graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         graphics.setFill(Color.WHITE);
         graphics.setStroke(Color.DARKGRAY);
 
+        canvas.setWidth(core.size.width * core.tileSize.width);
+        canvas.setHeight(core.size.height * core.tileSize.height);
+
         if (showGrid) {
-            for (int i = 0; i < core.size.height; i++) {
+            for (int i = 0; i <= core.size.height; i++) {
                 graphics.strokeLine(0, i * core.tileSize.height, (int) canvas.getWidth(), i * core.tileSize.height);
             }
 
@@ -177,8 +191,9 @@ public class FxWindow extends Application {
             for (int j = 0; j < core.size.height; j++) {
                 if (core.state[i][j]) {
                     graphics.fillRect(
-                            (i * core.tileSize.width) + tileGap - 1, j * (core.tileSize.height + tileGap - 1),
-                            core.tileSize.width - tileGap, core.tileSize.height - tileGap);
+                            (i * core.tileSize.width) + tileGap + tileOffset.width,
+                            (j * core.tileSize.height) + tileGap + tileOffset.height,
+                            core.tileSize.width - tileGap * 2, core.tileSize.height - tileGap * 2);
                 }
             }
         }

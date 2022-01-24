@@ -3,10 +3,11 @@ package com.gol.GameOfLife;
 import javafx.application.Application;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class GOLcore {
 
-    public Dimension size = new Dimension(50, 50);
+    public Dimension size = new Dimension(20, 20);
     public Dimension tileSize = new Dimension(17, 17);
 
     public boolean[][] state;
@@ -21,7 +22,10 @@ public class GOLcore {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Application.launch(FxWindow.class);
+        //Application.launch(FxWindow.class);
+
+        GOLcore core = new GOLcore();
+        System.out.println(Arrays.deepToString(core.nextGeneration(core.state)));
 
             /*int M = 13, N = 90, NumGen = 80;
             // Intiliazing the grid.
@@ -111,6 +115,36 @@ public class GOLcore {
                 builder.delete(1,builder.length());
                 nextGeneration(future, M, N,NumGen - 1);//For recursivity
             }*/
+    }
+
+    public boolean[][] nextGeneration(boolean[][] currentGen) {
+        boolean[][] nextGen = new boolean[currentGen.length][currentGen[0].length];
+
+        for (int i = 0; i < currentGen.length; i++) {
+            for (int j = 0; j < currentGen[0].length; j++) {
+                int nbrAlive = -1;
+
+                for (int k = -1; k < 1; k++) {
+                    for (int l = -1; l < 1; l++) {
+                        try {
+                            if(currentGen[i + k][j + l]) {
+                                nbrAlive++;
+                            }
+                        } catch (Exception ignored) {}
+                    }
+                }
+
+                switch (nbrAlive) {
+                    case 0: nextGen[i][j] = false;
+                    case 1: nextGen[i][j] = false;
+                    case 2: nextGen[i][j] = true;
+                    case 3: nextGen[i][j] = true;
+                    default: nextGen[i][j] = false;
+                }
+            }
+        }
+
+        return nextGen;
     }
 
 }
