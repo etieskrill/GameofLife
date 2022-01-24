@@ -23,29 +23,22 @@ public class FxWindow extends Application {
 
     public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public final String title = "Game of Life";
-    public boolean showGrid = false;
-    public final int tileGap = 1;
+    public boolean showGrid = true;
+    public final int tileGap = 2;
 
     GOLcore core;
     TilePane editPaneTiles;
 
-    /*public Window(GOLcore core) {
-        this.core = core;
-    }*/
-
     @Override
     public void start(Stage stage) throws Exception {
         core = new GOLcore();
-        /*core.state[1][3] = true;
-        core.state[1][4] = true;
-        core.state[24][13] = true;
-        core.state[15][16] = true;*/ //sum testin idk
         stage.setTitle(title);
 
-        //Universal ui elements
-        Button save = new Button("Save");
-        Button edit1 = new Button("Edit");
-        Button enter = new Button("Enter");
+        //Ui elements
+        Button mainEditButton = new Button("Edit");
+
+        Button editSaveButton = new Button("Save");
+        Button editEnterButton = new Button("Enter");
 
         Label widthLabel = new Label("width:");
         widthLabel.setAlignment(Pos.CENTER);
@@ -67,19 +60,26 @@ public class FxWindow extends Application {
         heightBox.setSpacing(5);
         heightBox.setAlignment(Pos.CENTER);
 
-        HBox bottomUI = new HBox();
-        bottomUI.setPadding(new Insets(20, 20, 20, 20));
-        bottomUI.setSpacing(10);
-        bottomUI.setAlignment(Pos.CENTER)   ;
-        bottomUI.getChildren().addAll(save, edit1, widthBox, heightBox, enter);
+        HBox mainBottomUI = new HBox();
+        mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
+        mainBottomUI.setSpacing(10);
+        mainBottomUI.setAlignment(Pos.CENTER);
+        mainBottomUI.getChildren().addAll(mainEditButton);
+
+        HBox editBottomUI = new HBox();
+        editBottomUI.setPadding(new Insets(20, 20, 20, 20));
+        editBottomUI.setSpacing(10);
+        editBottomUI.setAlignment(Pos.CENTER);
+        editBottomUI.getChildren().addAll(editSaveButton, widthBox, heightBox, editEnterButton);
 
         //Def main panel
         BorderPane mainBorder = new BorderPane();
         Canvas canvas = new Canvas(core.size.width * core.tileSize.width, core.size.height * core.tileSize.height);
         StackPane background = new StackPane(canvas);
         background.setStyle("-fx-background-color: BLACK");
+        background.setPadding(new Insets(20, 20, 0, 20));
         mainBorder.setCenter(background);
-        mainBorder.setBottom(bottomUI);
+        mainBorder.setBottom(mainBottomUI);
         GraphicsContext graphics = canvas.getGraphicsContext2D();
 
         refreshMainTiles(graphics, canvas);
@@ -96,46 +96,42 @@ public class FxWindow extends Application {
 
         BorderPane editBorder = new BorderPane();
         editBorder.setCenter(editPaneTiles);
-        editBorder.setBottom(bottomUI);
+        editBorder.setBottom(editBottomUI);
 
         Scene edit = new Scene(editBorder);
         edit.getStylesheets().add(String.valueOf(this.getClass().getResource("/style.css")));
 
         //Choose scene
-        stage.setScene(edit);
+        stage.setScene(main);
         stage.show();
 
         //Button actions
-        enter.setOnAction(e -> {
+        editEnterButton.setOnAction(e -> { //Enter button in edit panel, confirms changes to grid size
             this.core.size.width = parseInt(widthField);
             this.core.size.height = parseInt(heightField);
 
             editPaneTiles.setPrefColumns(this.core.size.width);
             editPaneTiles.setPrefRows(this.core.size.height);
 
-            /*switch (stage.getScene()) {
-                case edit:
-            }*/
-
             refreshEditTiles();
             widthField.setText(Integer.toString(this.core.size.width));
             heightField.setText(Integer.toString(this.core.size.height));
         });
 
-        save.setOnAction(e -> {
+        editSaveButton.setOnAction(e -> { //Save button in edit panel, confirms entered tile config and sets scene to main panel
             for (int i = 0; i < core.size.height; i++) {
                 for (int j = 0; j < core.size.width; j++) {
                     core.state[j][i] = ((CheckBox) editPaneTiles.getChildren().get(i * core.size.height + j)).isSelected();
                 }
             }
 
-            //System.out.println(Arrays.deepToString(core.state)); //Debög
+            //System.out.println(Arrays.deepToString(core.state)); //Filthy debög
 
             refreshMainTiles(graphics, canvas);
             stage.setScene(main);
         });
 
-        edit1.setOnAction(e -> {
+        mainEditButton.setOnAction(e -> { //Edit button in main panel, sets scene to edit panel
             stage.setScene(edit);
         });
     }
@@ -162,7 +158,7 @@ public class FxWindow extends Application {
         this.editPaneTiles.getChildren().addAll(checkBoxes);
     }
 
-    public void refreshMainTiles(GraphicsContext graphics, Canvas canvas) {
+    public void refreshMainTiles(GraphicsContext graphics, Canvas canvas) { //Draws tiles to main panel according to core state
         graphics.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         graphics.setFill(Color.WHITE);
         graphics.setStroke(Color.DARKGRAY);
@@ -172,7 +168,7 @@ public class FxWindow extends Application {
                 graphics.strokeLine(0, i * core.tileSize.height, (int) canvas.getWidth(), i * core.tileSize.height);
             }
 
-            for (int i = 0; i < core.size.width; i++) {
+            for (int i = 0; i <= core.size.width; i++) {
                 graphics.strokeLine(i * core.tileSize.width, 0, i * core.tileSize.width, (int) canvas.getHeight());
             }
         }
@@ -181,7 +177,7 @@ public class FxWindow extends Application {
             for (int j = 0; j < core.size.height; j++) {
                 if (core.state[i][j]) {
                     graphics.fillRect(
-                            (i * core.tileSize.width) + tileGap, j * (core.tileSize.height + tileGap),
+                            (i * core.tileSize.width) + tileGap - 1, j * (core.tileSize.height + tileGap - 1),
                             core.tileSize.width - tileGap, core.tileSize.height - tileGap);
                 }
             }

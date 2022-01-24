@@ -7,7 +7,7 @@ import java.awt.*;
 public class GOLcore {
 
     public Dimension size = new Dimension(50, 50);
-    public Dimension tileSize = new Dimension(16, 16);
+    public Dimension tileSize = new Dimension(17, 17);
 
     public boolean[][] state;
 
