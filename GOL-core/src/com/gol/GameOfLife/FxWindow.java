@@ -36,15 +36,15 @@ public class FxWindow extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         core = new GOLcore();
-        core.state[1][3] = true;
+        /*core.state[1][3] = true;
         core.state[1][4] = true;
         core.state[24][13] = true;
-        core.state[15][16] = true;
+        core.state[15][16] = true;*/ //sum testin idk
         stage.setTitle(title);
 
         //Universal ui elements
         Button save = new Button("Save");
-        Button succ = new Button("succ");
+        Button edit1 = new Button("Edit");
         Button enter = new Button("Enter");
 
         Label widthLabel = new Label("width:");
@@ -71,7 +71,7 @@ public class FxWindow extends Application {
         bottomUI.setPadding(new Insets(20, 20, 20, 20));
         bottomUI.setSpacing(10);
         bottomUI.setAlignment(Pos.CENTER)   ;
-        bottomUI.getChildren().addAll(save, succ, widthBox, heightBox, enter);
+        bottomUI.getChildren().addAll(save, edit1, widthBox, heightBox, enter);
 
         //Def main panel
         BorderPane mainBorder = new BorderPane();
@@ -82,28 +82,7 @@ public class FxWindow extends Application {
         mainBorder.setBottom(bottomUI);
         GraphicsContext graphics = canvas.getGraphicsContext2D();
 
-        graphics.setFill(Color.WHITE);
-        graphics.setStroke(Color.DARKGRAY);
-
-        if (showGrid) {
-            for (int i = 0; i < core.size.height; i++) {
-                graphics.strokeLine(0, i * core.tileSize.height, (int) canvas.getWidth(), i * core.tileSize.height);
-            }
-
-            for (int i = 0; i < core.size.width; i++) {
-                graphics.strokeLine(i * core.tileSize.width, 0, i * core.tileSize.width, (int) canvas.getHeight());
-            }
-        }
-
-        for (int i = 0; i < core.size.width; i++) {
-            for (int j = 0; j < core.size.height; j++) {
-                if (core.state[i][j]) {
-                    graphics.fillRect(
-                            (i * core.tileSize.width) + tileGap, j * (core.tileSize.height + tileGap),
-                            core.tileSize.width - tileGap, core.tileSize.height - tileGap);
-                }
-            }
-        }
+        refreshMainTiles(graphics, canvas);
 
         Scene main = new Scene(mainBorder);
 
@@ -146,13 +125,18 @@ public class FxWindow extends Application {
         save.setOnAction(e -> {
             for (int i = 0; i < core.size.height; i++) {
                 for (int j = 0; j < core.size.width; j++) {
-                    core.state[i][j] = ((CheckBox) editPaneTiles.getChildren().get(i * core.size.height + j)).isSelected();
+                    core.state[j][i] = ((CheckBox) editPaneTiles.getChildren().get(i * core.size.height + j)).isSelected();
                 }
             }
 
             //System.out.println(Arrays.deepToString(core.state)); //Debög
 
+            refreshMainTiles(graphics, canvas);
             stage.setScene(main);
+        });
+
+        edit1.setOnAction(e -> {
+            stage.setScene(edit);
         });
     }
 
@@ -176,6 +160,32 @@ public class FxWindow extends Application {
 
         this.editPaneTiles.getChildren().clear();
         this.editPaneTiles.getChildren().addAll(checkBoxes);
+    }
+
+    public void refreshMainTiles(GraphicsContext graphics, Canvas canvas) {
+        graphics.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        graphics.setFill(Color.WHITE);
+        graphics.setStroke(Color.DARKGRAY);
+
+        if (showGrid) {
+            for (int i = 0; i < core.size.height; i++) {
+                graphics.strokeLine(0, i * core.tileSize.height, (int) canvas.getWidth(), i * core.tileSize.height);
+            }
+
+            for (int i = 0; i < core.size.width; i++) {
+                graphics.strokeLine(i * core.tileSize.width, 0, i * core.tileSize.width, (int) canvas.getHeight());
+            }
+        }
+
+        for (int i = 0; i < core.size.width; i++) {
+            for (int j = 0; j < core.size.height; j++) {
+                if (core.state[i][j]) {
+                    graphics.fillRect(
+                            (i * core.tileSize.width) + tileGap, j * (core.tileSize.height + tileGap),
+                            core.tileSize.width - tileGap, core.tileSize.height - tileGap);
+                }
+            }
+        }
     }
 
 }
