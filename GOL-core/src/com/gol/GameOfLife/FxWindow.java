@@ -35,6 +35,9 @@ public class FxWindow extends Application {
         Button mainConfirmButton = new Button("Confirm");
 
         Button mainNextGenButton = new Button("Next Generation");
+        Button mainRunButton = new Button("Run");
+
+        Slider mainSimSpeedSlider = new Slider(0, 100, core.simSpeed);
 
         Button editSaveButton = new Button("Save");
         Button editEnterButton = new Button("Enter");
@@ -66,7 +69,7 @@ public class FxWindow extends Application {
         heightBox.setAlignment(Pos.CENTER);
 
         VBox mainRightUI = new VBox();
-        mainRightUI.getChildren().addAll(mainNextGenButton);
+        mainRightUI.getChildren().addAll(mainNextGenButton, mainRunButton, mainSimSpeedSlider);
 
         HBox mainBottomUI = new HBox();
         mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
@@ -158,6 +161,13 @@ public class FxWindow extends Application {
         editClearButton.setOnAction(e -> { //TEMP only works bcs refreshEditTiles is brok, separate func needed
             refreshEditTiles();
         });
+
+        mainRunButton.setOnAction(e -> {
+            core.running = true;
+            mainRightUI.getChildren().get(0).setVisible(false);
+        });
+
+        //Slider actions
     }
 
     public int parseInt(TextField input){ //Convenience bundle; checks and returns integer from a text field

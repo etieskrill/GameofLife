@@ -10,6 +10,9 @@ public class GOLcore {
     public Dimension size = new Dimension(20, 20);
     public Dimension tileSize = new Dimension(17, 17);
 
+    public boolean running = false;
+    public int simSpeed = 20; //Proposed tenth of Hertz
+
     public boolean[][] state;
 
     public GOLcore() {
