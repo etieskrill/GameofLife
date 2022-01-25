@@ -17,7 +17,7 @@ import java.util.HashSet;
 public class FxWindow extends Application {
 
     //public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    public final String title = "Game of Life";
+    public String title = "Game of Life";
     public boolean showGrid = false;
     public int tileGap = 2;
     public Dimension tileOffset = new Dimension(0, 0);
@@ -36,6 +36,13 @@ public class FxWindow extends Application {
 
         Button mainNextGenButton = new Button("Next Generation");
         Button mainRunButton = new Button("Run");
+        mainRunButton.managedProperty().bind(mainRunButton.visibleProperty());
+        Button mainStopButton = new Button("Stop");
+        mainStopButton.managedProperty().bind(mainRunButton.visibleProperty());
+        //mainStopButton.setVisible(false);
+
+        HBox mainRunBox = new HBox();
+        mainRunBox.getChildren().addAll(mainRunButton, mainStopButton);
 
         Slider mainSimSpeedSlider = new Slider(0, 100, core.simSpeed);
 
@@ -69,7 +76,9 @@ public class FxWindow extends Application {
         heightBox.setAlignment(Pos.CENTER);
 
         VBox mainRightUI = new VBox();
-        mainRightUI.getChildren().addAll(mainNextGenButton, mainRunButton, mainSimSpeedSlider);
+        mainRightUI.setPadding(new Insets(10, 10, 10, 10));
+        mainRightUI.setSpacing(10);
+        mainRightUI.getChildren().addAll(mainNextGenButton, mainSimSpeedSlider, mainRunBox);
 
         HBox mainBottomUI = new HBox();
         mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
@@ -164,7 +173,26 @@ public class FxWindow extends Application {
 
         mainRunButton.setOnAction(e -> {
             core.running = true;
-            mainRightUI.getChildren().get(0).setVisible(false);
+            /*mainRightUI.getChildren().get(2).setVisible(false);
+            mainRightUI.getChildren().get(2).setManaged(false);
+            mainRightUI.getChildren().get(3).setVisible(true);
+            mainRightUI.getChildren().get(3).setManaged(true);*/
+            //mainRightUI.getChildren().get(2).setDisable(true);
+            //mainRightUI.getChildren().get(3).setDisable(false);
+            mainRunBox.getChildren().get(0).setDisable(true);
+            mainRunBox.getChildren().get(1).setDisable(false);
+        });
+
+        mainStopButton.setOnAction(e -> {
+            core.running = false;
+            /*mainRightUI.getChildren().get(3).setVisible(false);
+            mainRightUI.getChildren().get(3).setManaged(false);
+            mainRightUI.getChildren().get(2).setVisible(true);
+            mainRightUI.getChildren().get(2).setManaged(true);*/
+            //mainRightUI.getChildren().get(2).setDisable(false);
+            //mainRightUI.getChildren().get(3).setDisable(true);
+            mainRunBox.getChildren().get(0).setDisable(false);
+            mainRunBox.getChildren().get(1).setDisable(true);
         });
 
         //Slider actions

@@ -24,10 +24,6 @@ public class GOLcore {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        //Application.launch(FxWindow.class);
-    }
-
     public boolean[][] nextGeneration(boolean[][] currentGen) {
         boolean[][] nextGen = new boolean[currentGen.length][currentGen[0].length];
 
