@@ -11,14 +11,12 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.awt.Toolkit;
 import java.awt.Dimension;
-import java.util.Arrays;
 import java.util.HashSet;
 
 public class FxWindow extends Application {
 
-    public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    //public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public final String title = "Game of Life";
     public boolean showGrid = false;
     public int tileGap = 2;
@@ -36,8 +34,11 @@ public class FxWindow extends Application {
         Button mainEditButton = new Button("Edit");
         Button mainConfirmButton = new Button("Confirm");
 
+        Button mainNextGenButton = new Button("Next Generation");
+
         Button editSaveButton = new Button("Save");
         Button editEnterButton = new Button("Enter");
+        Button editClearButton = new Button("Clear");
 
         Slider tileWidthSlider = new Slider(0, core.tileSize.width, core.tileSize.width);
         Slider tileHeightSlider = new Slider(0, core.tileSize.height, core.tileSize.height);
@@ -64,6 +65,9 @@ public class FxWindow extends Application {
         heightBox.setSpacing(5);
         heightBox.setAlignment(Pos.CENTER);
 
+        VBox mainRightUI = new VBox();
+        mainRightUI.getChildren().addAll(mainNextGenButton);
+
         HBox mainBottomUI = new HBox();
         mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
         mainBottomUI.setSpacing(10);
@@ -74,7 +78,7 @@ public class FxWindow extends Application {
         editBottomUI.setPadding(new Insets(20, 20, 20, 20));
         editBottomUI.setSpacing(10);
         editBottomUI.setAlignment(Pos.CENTER);
-        editBottomUI.getChildren().addAll(editSaveButton, widthBox, heightBox, editEnterButton);
+        editBottomUI.getChildren().addAll(editSaveButton, widthBox, heightBox, editEnterButton, editClearButton);
 
         //Def main panel
         BorderPane mainBorder = new BorderPane();
@@ -84,7 +88,7 @@ public class FxWindow extends Application {
         background.setPadding(new Insets(20, 20, 20, 20));
         mainBorder.setCenter(background);
         mainBorder.setBottom(mainBottomUI);
-        GraphicsContext graphics = canvas.getGraphicsContext2D();
+        mainBorder.setRight(mainRightUI);
 
         refreshMainTiles(canvas);
 
@@ -136,13 +140,23 @@ public class FxWindow extends Application {
         });
 
         mainEditButton.setOnAction(e -> { //Edit button in main panel, sets scene to edit panel
+            refreshEditTiles();
             stage.setScene(edit);
         });
 
-        mainConfirmButton.setOnAction(e -> {
+        mainConfirmButton.setOnAction(e -> { //Applies current slider and tile gap inputs
             core.tileSize = new Dimension((int) tileWidthSlider.getValue(), (int) tileHeightSlider.getValue());
             tileGap = parseInt(mainTileGapField);
             refreshMainTiles(canvas);
+        });
+
+        mainNextGenButton.setOnAction(e -> {
+            core.state = core.nextGeneration(core.state);
+            refreshMainTiles(canvas);
+        });
+
+        editClearButton.setOnAction(e -> { //TEMP only works bcs refreshEditTiles is brok, separate func needed
+            refreshEditTiles();
         });
     }
 
@@ -155,13 +169,18 @@ public class FxWindow extends Application {
     }
 
     public void refreshEditTiles() { //Refreshes edit tiles according to current core attributes, will overwrite previous data
+        //FIXME no it fucking doesnt, just clears all data, cbf to fix it rn
         if (editPaneTiles == null) {
             editPaneTiles = new TilePane();
         }
 
-        HashSet<CheckBox> checkBoxes = new HashSet<CheckBox>();
-        for (int i = 0; i < this.core.size.width * this.core.size.height; i++) {
-            checkBoxes.add(new CheckBox());
+        HashSet<CheckBox> checkBoxes = new HashSet<>();
+        for (int i = 0; i < core.size.height; i++) {
+            for (int j = 0; j < core.size.width; j++) {
+                CheckBox checkBox = new CheckBox();
+                //checkBox.setSelected(core.state[i][j]);
+                checkBoxes.add(checkBox);
+            }
         }
 
         this.editPaneTiles.getChildren().clear();
