@@ -1,6 +1,7 @@
 package com.gol.GameOfLife;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,16 +19,18 @@ public class FxWindow extends Application {
 
     //public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public String title = "Game of Life";
-    public boolean showGrid = false;
-    public int tileGap = 2;
-    public Dimension tileOffset = new Dimension(0, 0);
+    public static boolean showGrid = false;
+    public static int tileGap = 1;
+    public static Dimension tileOffset = new Dimension(0, 0);
 
-    GOLcore core;
+    static GOLcore core = new GOLcore();
+    public RunningThread thread = new RunningThread(core);
+
     TilePane editPaneTiles;
+    static Canvas canvas = new Canvas(core.size.width * core.tileSize.width, core.size.height * core.tileSize.height);
 
     @Override
     public void start(Stage stage) throws Exception {
-        core = new GOLcore();
         stage.setTitle(title);
 
         //Ui elements
@@ -39,12 +42,18 @@ public class FxWindow extends Application {
         mainRunButton.managedProperty().bind(mainRunButton.visibleProperty());
         Button mainStopButton = new Button("Stop");
         mainStopButton.managedProperty().bind(mainRunButton.visibleProperty());
-        //mainStopButton.setVisible(false);
+        mainStopButton.setDisable(true);
+        Button mainSpeedConfirmButton = new Button("Enter");
 
         HBox mainRunBox = new HBox();
         mainRunBox.getChildren().addAll(mainRunButton, mainStopButton);
 
-        Slider mainSimSpeedSlider = new Slider(0, 100, core.simSpeed);
+        Slider mainSimSpeedSlider = new Slider(core.minSimSpeed, core.maxSimSpeed, core.simSpeed);
+        mainSimSpeedSlider.setShowTickLabels(true);
+        mainSimSpeedSlider.setShowTickMarks(true);
+        mainSimSpeedSlider.setMajorTickUnit((double) core.simSpeed / 2);
+        mainSimSpeedSlider.setMinorTickCount(core.simSpeed / 20);
+        mainSimSpeedSlider.setBlockIncrement((double) core.simSpeed / 10);
 
         Button editSaveButton = new Button("Save");
         Button editEnterButton = new Button("Enter");
@@ -57,7 +66,7 @@ public class FxWindow extends Application {
 
         Label widthLabel = new Label("width:");
         widthLabel.setAlignment(Pos.CENTER);
-        TextField widthField = new TextField(Integer.toString(this.core.size.width));
+        TextField widthField = new TextField(Integer.toString(core.size.width));
         widthField.setAlignment(Pos.CENTER);
         widthField.setMaxWidth(50);
         HBox widthBox = new HBox();
@@ -67,7 +76,7 @@ public class FxWindow extends Application {
 
         Label heightLabel = new Label("height:");
         widthLabel.setAlignment(Pos.CENTER);
-        TextField heightField = new TextField(Integer.toString(this.core.size.height));
+        TextField heightField = new TextField(Integer.toString(core.size.height));
         heightField.setAlignment(Pos.CENTER);
         heightField.setMaxWidth(50);
         HBox heightBox = new HBox();
@@ -75,10 +84,10 @@ public class FxWindow extends Application {
         heightBox.setSpacing(5);
         heightBox.setAlignment(Pos.CENTER);
 
-        VBox mainRightUI = new VBox();
+        VBox mainRightUI = new VBox(); //TODO presets
         mainRightUI.setPadding(new Insets(10, 10, 10, 10));
         mainRightUI.setSpacing(10);
-        mainRightUI.getChildren().addAll(mainNextGenButton, mainSimSpeedSlider, mainRunBox);
+        mainRightUI.getChildren().addAll(mainNextGenButton, mainSimSpeedSlider, mainSpeedConfirmButton, mainRunBox);
 
         HBox mainBottomUI = new HBox();
         mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
@@ -94,7 +103,7 @@ public class FxWindow extends Application {
 
         //Def main panel
         BorderPane mainBorder = new BorderPane();
-        Canvas canvas = new Canvas(core.size.width * core.tileSize.width, core.size.height * core.tileSize.height);
+        //Canvas canvas = new Canvas(core.size.width * core.tileSize.width, core.size.height * core.tileSize.height);
         StackPane background = new StackPane(canvas);
         background.setStyle("-fx-background-color: BLACK");
         background.setPadding(new Insets(20, 20, 20, 20));
@@ -102,15 +111,15 @@ public class FxWindow extends Application {
         mainBorder.setBottom(mainBottomUI);
         mainBorder.setRight(mainRightUI);
 
-        refreshMainTiles(canvas);
+        refreshMainTiles();
 
         Scene main = new Scene(mainBorder);
 
         //Def edit panel
         refreshEditTiles();
         editPaneTiles.setAlignment(Pos.CENTER);
-        editPaneTiles.setPrefColumns(this.core.size.width);
-        editPaneTiles.setPrefRows(this.core.size.height);
+        editPaneTiles.setPrefColumns(core.size.width);
+        editPaneTiles.setPrefRows(core.size.height);
         editPaneTiles.setMaxWidth(Region.USE_PREF_SIZE);
         editPaneTiles.setPadding(new Insets(20, 20, 0, 20));
 
@@ -125,17 +134,20 @@ public class FxWindow extends Application {
         stage.setScene(main);
         stage.show();
 
+        //Initiate run thread
+        thread.start();
+
         //Button actions
         editEnterButton.setOnAction(e -> { //Enter button in edit panel, confirms changes to grid size
-            this.core.size.width = parseInt(widthField);
-            this.core.size.height = parseInt(heightField);
+            core.size.width = parseInt(widthField);
+            core.size.height = parseInt(heightField);
 
-            editPaneTiles.setPrefColumns(this.core.size.width);
-            editPaneTiles.setPrefRows(this.core.size.height);
+            editPaneTiles.setPrefColumns(core.size.width);
+            editPaneTiles.setPrefRows(core.size.height);
 
             refreshEditTiles();
-            widthField.setText(Integer.toString(this.core.size.width));
-            heightField.setText(Integer.toString(this.core.size.height));
+            widthField.setText(Integer.toString(core.size.width));
+            heightField.setText(Integer.toString(core.size.height));
         });
 
         editSaveButton.setOnAction(e -> { //Save button in edit panel, confirms entered tile config and sets scene to main panel
@@ -147,24 +159,29 @@ public class FxWindow extends Application {
 
             //System.out.println(Arrays.deepToString(core.state)); //Filthy debög
 
-            refreshMainTiles(canvas);
+            refreshMainTiles();
             stage.setScene(main);
         });
 
         mainEditButton.setOnAction(e -> { //Edit button in main panel, sets scene to edit panel
             refreshEditTiles();
+            if (core.running) {
+                core.running = false;
+                mainRunBox.getChildren().get(0).setDisable(false);
+                mainRunBox.getChildren().get(1).setDisable(true);
+            }
             stage.setScene(edit);
         });
 
         mainConfirmButton.setOnAction(e -> { //Applies current slider and tile gap inputs
             core.tileSize = new Dimension((int) tileWidthSlider.getValue(), (int) tileHeightSlider.getValue());
             tileGap = parseInt(mainTileGapField);
-            refreshMainTiles(canvas);
+            refreshMainTiles();
         });
 
         mainNextGenButton.setOnAction(e -> {
             core.state = core.nextGeneration(core.state);
-            refreshMainTiles(canvas);
+            refreshMainTiles();
         });
 
         editClearButton.setOnAction(e -> { //TEMP only works bcs refreshEditTiles is brok, separate func needed
@@ -173,29 +190,31 @@ public class FxWindow extends Application {
 
         mainRunButton.setOnAction(e -> {
             core.running = true;
-            /*mainRightUI.getChildren().get(2).setVisible(false);
-            mainRightUI.getChildren().get(2).setManaged(false);
-            mainRightUI.getChildren().get(3).setVisible(true);
-            mainRightUI.getChildren().get(3).setManaged(true);*/
-            //mainRightUI.getChildren().get(2).setDisable(true);
-            //mainRightUI.getChildren().get(3).setDisable(false);
             mainRunBox.getChildren().get(0).setDisable(true);
             mainRunBox.getChildren().get(1).setDisable(false);
         });
 
         mainStopButton.setOnAction(e -> {
             core.running = false;
-            /*mainRightUI.getChildren().get(3).setVisible(false);
-            mainRightUI.getChildren().get(3).setManaged(false);
-            mainRightUI.getChildren().get(2).setVisible(true);
-            mainRightUI.getChildren().get(2).setManaged(true);*/
-            //mainRightUI.getChildren().get(2).setDisable(false);
-            //mainRightUI.getChildren().get(3).setDisable(true);
             mainRunBox.getChildren().get(0).setDisable(false);
             mainRunBox.getChildren().get(1).setDisable(true);
         });
 
-        //Slider actions
+        mainSpeedConfirmButton.setOnAction(e -> {
+            core.simSpeed = (int) mainSimSpeedSlider.getValue();
+        });
+
+        //Override window close request to kill thread if window closed
+        stage.setOnCloseRequest(windowEvent -> {
+            try {
+                thread.join(1); //TODO let the glorious Thread.destroy(); method return pls
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Platform.exit();
+            System.exit(0);
+        });
+
     }
 
     public int parseInt(TextField input){ //Convenience bundle; checks and returns integer from a text field
@@ -225,7 +244,7 @@ public class FxWindow extends Application {
         this.editPaneTiles.getChildren().addAll(checkBoxes);
     }
 
-    public void refreshMainTiles(Canvas canvas) { //Draws tiles to main panel according to core state
+    public static void refreshMainTiles() { //Draws tiles to main panel according to core state
         GraphicsContext graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         graphics.setFill(Color.WHITE);
