@@ -8,16 +8,19 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.HashSet;
 
 public class FxWindow extends Application {
 
-    //public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public String title = "Game of Life";
     public static boolean showGrid = false;
     public static int tileGap = 1;
@@ -132,32 +135,76 @@ public class FxWindow extends Application {
 
         //Choose scene
         stage.setScene(main);
+        stage.setResizable(false);
         stage.show();
 
         //Initiate run thread
         thread.start();
 
         //Button actions
-        editEnterButton.setOnAction(e -> { //Enter button in edit panel, confirms changes to grid size
+        editEnterButton.setOnAction(e -> { //Enter button in edit panel, confirms changes to grid size, deletes current state
+            int prevWidth = core.size.width;
+            int prevHeight = core.size.height;
+
             core.size.width = parseInt(widthField);
             core.size.height = parseInt(heightField);
 
             editPaneTiles.setPrefColumns(core.size.width);
             editPaneTiles.setPrefRows(core.size.height);
 
-            refreshEditTiles();
-            widthField.setText(Integer.toString(core.size.width));
-            heightField.setText(Integer.toString(core.size.height));
-        });
-
-        editSaveButton.setOnAction(e -> { //Save button in edit panel, confirms entered tile config and sets scene to main panel
+            core.state = new boolean[core.size.height][core.size.width];
             for (int i = 0; i < core.size.height; i++) {
                 for (int j = 0; j < core.size.width; j++) {
-                    core.state[j][i] = ((CheckBox) editPaneTiles.getChildren().get(i * core.size.height + j)).isSelected();
+                    core.state[i][j] = false;
                 }
             }
 
-            //System.out.println(Arrays.deepToString(core.state)); //Filthy debög
+            refreshEditTiles();
+            widthField.setText(Integer.toString(core.size.width));
+            heightField.setText(Integer.toString(core.size.height));
+
+            stage.sizeToScene();
+
+            if (stage.getHeight() > screenSize.height - 2 || stage.getWidth() > screenSize.width - 2) {
+                Alert alert = new Alert(
+                        Alert.AlertType.WARNING,
+                        "Window size exceeds screen size. Keep changes?",
+                        ButtonType.APPLY,
+                        ButtonType.CANCEL
+                );
+
+                alert.showAndWait();
+
+                if (alert.getResult() == ButtonType.CANCEL) {
+                    core.size.width = prevWidth;
+                    core.size.height = prevHeight;
+
+                    core.state = new boolean[core.size.height][core.size.width];
+                    for (int i = 0; i < core.size.height; i++) {
+                        for (int j = 0; j < core.size.width; j++) {
+                            core.state[i][j] = false;
+                        }
+                    }
+
+                    refreshEditTiles();
+                    widthField.setText(Integer.toString(core.size.width));
+                    heightField.setText(Integer.toString(core.size.height));
+
+                    editPaneTiles.setPrefColumns(core.size.width);
+                    editPaneTiles.setPrefRows(core.size.height);
+
+                    stage.sizeToScene();
+                }
+            }
+
+        });
+
+        editSaveButton.setOnAction(e -> { //Save button in edit panel, confirms entered tile config and sets scene to main panel
+            for (int j = 0; j < core.size.width; j++) {
+                for (int i = 0; i < core.size.height; i++) {
+                    core.state[i][j] = ((CheckBox) editPaneTiles.getChildren().get(j * core.size.height + i)).isSelected();
+                } //TODO wtf it dond work for non-squares
+            }
 
             refreshMainTiles();
             stage.setScene(main);
@@ -263,8 +310,8 @@ public class FxWindow extends Application {
             }
         }
 
-        for (int i = 0; i < core.size.width; i++) {
-            for (int j = 0; j < core.size.height; j++) {
+        for (int i = 0; i < core.size.height; i++) {
+            for (int j = 0; j < core.size.width; j++) {
                 if (core.state[i][j]) {
                     graphics.fillRect(
                             (i * core.tileSize.width) + tileGap + tileOffset.width,

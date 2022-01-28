@@ -19,16 +19,15 @@ public class RunningThread extends Thread{
             if (core.running) {
                 core.state = core.nextGeneration(core.state);
                 refreshMainTiles();
-                try {
-                    TimeUnit.MILLISECONDS.sleep(2000 - core.simSpeed);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 System.out.print(" successful\n");
             } else {
                 System.out.print(" denied\n");
             }
-            ;
+            try {
+                TimeUnit.MILLISECONDS.sleep(core.maxSimSpeed - core.simSpeed);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
