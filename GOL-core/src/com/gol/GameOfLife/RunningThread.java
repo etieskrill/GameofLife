@@ -24,7 +24,7 @@ public class RunningThread extends Thread{
                 System.out.print(" denied\n");
             }
             try {
-                TimeUnit.MILLISECONDS.sleep(core.maxSimSpeed - core.simSpeed);
+                TimeUnit.MILLISECONDS.sleep(10 + core.maxSimSpeed - core.simSpeed);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

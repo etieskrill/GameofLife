@@ -2,6 +2,10 @@ package com.gol.GameOfLife;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,11 +24,13 @@ import java.util.HashSet;
 
 public class FxWindow extends Application {
 
+    //Attributes only concerning graphic interface
     public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public String title = "Game of Life";
     public static boolean showGrid = false;
     public static int tileGap = 1;
     public static Dimension tileOffset = new Dimension(0, 0);
+    public static ColorScheme colorScheme = ColorScheme.DARK;
 
     static GOLcore core = new GOLcore();
     public RunningThread thread = new RunningThread(core);
@@ -46,7 +52,6 @@ public class FxWindow extends Application {
         Button mainStopButton = new Button("Stop");
         mainStopButton.managedProperty().bind(mainRunButton.visibleProperty());
         mainStopButton.setDisable(true);
-        Button mainSpeedConfirmButton = new Button("Enter");
 
         HBox mainRunBox = new HBox();
         mainRunBox.getChildren().addAll(mainRunButton, mainStopButton);
@@ -66,6 +71,16 @@ public class FxWindow extends Application {
         Slider tileHeightSlider = new Slider(0, core.tileSize.height, core.tileSize.height);
 
         TextField mainTileGapField = new TextField(Integer.toString(tileGap));
+
+        CheckBox mainGridCheckBox = new CheckBox("Show grid");
+
+        ObservableList<String> colSchemes =
+                FXCollections.observableArrayList(
+                        ColorScheme.DARK.name
+                );
+
+        ComboBox<String> colorSchemeComboBox = new ComboBox<>(colSchemes);
+        colorSchemeComboBox.setValue("Dark");
 
         Label widthLabel = new Label("width:");
         widthLabel.setAlignment(Pos.CENTER);
@@ -90,7 +105,7 @@ public class FxWindow extends Application {
         VBox mainRightUI = new VBox(); //TODO presets
         mainRightUI.setPadding(new Insets(10, 10, 10, 10));
         mainRightUI.setSpacing(10);
-        mainRightUI.getChildren().addAll(mainNextGenButton, mainSimSpeedSlider, mainSpeedConfirmButton, mainRunBox);
+        mainRightUI.getChildren().addAll(mainNextGenButton, mainSimSpeedSlider, mainRunBox, mainGridCheckBox, colorSchemeComboBox);
 
         HBox mainBottomUI = new HBox();
         mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
@@ -106,7 +121,6 @@ public class FxWindow extends Application {
 
         //Def main panel
         BorderPane mainBorder = new BorderPane();
-        //Canvas canvas = new Canvas(core.size.width * core.tileSize.width, core.size.height * core.tileSize.height);
         StackPane background = new StackPane(canvas);
         background.setStyle("-fx-background-color: BLACK");
         background.setPadding(new Insets(20, 20, 20, 20));
@@ -131,7 +145,7 @@ public class FxWindow extends Application {
         editBorder.setBottom(editBottomUI);
 
         Scene edit = new Scene(editBorder);
-        edit.getStylesheets().add(String.valueOf(this.getClass().getResource("/style.css")));
+        edit.getStylesheets().add(String.valueOf(getClass().getResource("/style.css")));
 
         //Choose scene
         stage.setScene(main);
@@ -247,8 +261,17 @@ public class FxWindow extends Application {
             mainRunBox.getChildren().get(1).setDisable(true);
         });
 
-        mainSpeedConfirmButton.setOnAction(e -> {
+        mainGridCheckBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            showGrid = mainGridCheckBox.isSelected();
+            refreshMainTiles();
+        });
+
+        mainSimSpeedSlider.valueProperty().addListener((observableValue, number, t1) -> {
             core.simSpeed = (int) mainSimSpeedSlider.getValue();
+        });
+
+        colorSchemeComboBox.valueProperty().addListener((observableValue, s, t1) -> {
+            colorScheme = combo
         });
 
         //Override window close request to kill thread if window closed
@@ -272,7 +295,7 @@ public class FxWindow extends Application {
         }
     }
 
-    public void refreshEditTiles() { //Refreshes edit tiles according to current core attributes, will overwrite previous data
+    public void refreshEditTiles() { //Refreshes edit tiles according to current core attributes
         //FIXME no it fucking doesnt, just clears all data, cbf to fix it rn
         if (editPaneTiles == null) {
             editPaneTiles = new TilePane();
@@ -287,15 +310,15 @@ public class FxWindow extends Application {
             }
         }
 
-        this.editPaneTiles.getChildren().clear();
-        this.editPaneTiles.getChildren().addAll(checkBoxes);
+        editPaneTiles.getChildren().clear();
+        editPaneTiles.getChildren().addAll(checkBoxes);
     }
 
     public static void refreshMainTiles() { //Draws tiles to main panel according to core state
         GraphicsContext graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        graphics.setFill(Color.WHITE);
-        graphics.setStroke(Color.DARKGRAY);
+        graphics.setFill(colorScheme.tiles);
+        graphics.setStroke(colorScheme.grid);
 
         canvas.setWidth(core.size.width * core.tileSize.width);
         canvas.setHeight(core.size.height * core.tileSize.height);
