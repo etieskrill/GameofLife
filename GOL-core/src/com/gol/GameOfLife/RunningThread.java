@@ -15,20 +15,24 @@ public class RunningThread extends Thread{
     @Override
     public void run() {
         while (true) {
-            System.out.print("thread access");
+            //System.out.print("thread access");
             if (core.running) {
                 core.state = core.nextGeneration(core.state);
                 refreshMainTiles();
-                System.out.print(" successful\n");
+                //System.out.print(" successful\n");
             } else {
-                System.out.print(" denied\n");
+                //System.out.print(" denied\n");
             }
             try {
-                TimeUnit.MILLISECONDS.sleep(10 + core.maxSimSpeed - core.simSpeed);
+                TimeUnit.MILLISECONDS.sleep(Math.min(core.minSimDelay, core.maxSimSpeed - core.simSpeed));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void destroy() throws InterruptedException {
+        this.join(1);
     }
 
 }

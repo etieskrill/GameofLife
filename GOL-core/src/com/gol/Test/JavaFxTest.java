@@ -11,7 +11,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class JavaFxTest extends Application {
+/*public class JavaFxTest extends Application {
 
     GOLcore core;
     FxWindow fxwindow;
@@ -65,3 +65,4 @@ public class JavaFxTest extends Application {
         launch(args);
     }
 }
+*/

@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 
 public enum ColorScheme {
 
-    LIGHT("LIGHT", Color.WHITE, Color.LIGHTGRAY, Color.GRAY, Color.LIGHTGRAY),
+    LIGHT("Light", Color.WHITE, Color.LIGHTGRAY, Color.GRAY, Color.LIGHTGRAY),
     //DARCULA,
     DARK("Dark", Color.BLACK, Color.DARKGRAY, Color.LIGHTGRAY, Color.DARKGRAY.darker().darker());
 
@@ -21,6 +21,18 @@ public enum ColorScheme {
         this.menu = menu;
         this.tiles = tiles;
         this.grid = grid;
+    }
+
+    public static String getColorName(Color color) { //FIXME debug this
+        if (Color.WHITE.equals(color)) {
+            return "WHITE";
+        } else if (Color.LIGHTGRAY.equals(color)) {
+            return "LIGHTGRAY";
+        } else if (Color.DARKGRAY.equals(color)) {
+            return "DARKGRAY";
+        } else if (Color.BLACK.equals(color)) {
+            return "BLACK";
+        } else throw new RuntimeException("yalls colours wack");
     }
 
 }

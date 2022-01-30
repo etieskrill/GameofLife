@@ -2,8 +2,6 @@ package com.gol.GameOfLife;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -11,12 +9,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -24,19 +21,33 @@ import java.util.HashSet;
 
 public class FxWindow extends Application {
 
+    /**
+     * This class creates a GOLcore instance, and using several parameters defined below which only concern graphic
+     * display it visualises the current tile state. Features include an edit pane (partially borked atm), color scheme
+     * selector, general UI among other features which allow for more simple human interaction and QOL-features.
+     *
+     * As of now, it also includes the node listeners. Whether they preload all functions into some buffer or the
+     * functions are called each time an event is detected will determine if a separate class will be created for them
+     * or not.
+     *
+     * This class currently acts as a core builder. This functionality will subside eventually when it is clear how the
+     * JavaFx application framework functions, and how to properly interface with it from outside.
+     * why i be writin this nobdy gon reed it a/w
+     */
+
     //Attributes only concerning graphic interface
     public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public String title = "Game of Life";
     public static boolean showGrid = false;
     public static int tileGap = 1;
+    public static Dimension tileSize = new Dimension(17, 17);
     public static Dimension tileOffset = new Dimension(0, 0);
     public static ColorScheme colorScheme = ColorScheme.DARK;
 
-    static GOLcore core = new GOLcore();
-    public RunningThread thread = new RunningThread(core);
+    static GOLcore core = new GOLcore(true);
 
     TilePane editPaneTiles;
-    static Canvas canvas = new Canvas(core.size.width * core.tileSize.width, core.size.height * core.tileSize.height);
+    static Canvas canvas = new Canvas(core.size.width * tileSize.width, core.size.height * tileSize.height);
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -67,20 +78,21 @@ public class FxWindow extends Application {
         Button editEnterButton = new Button("Enter");
         Button editClearButton = new Button("Clear");
 
-        Slider tileWidthSlider = new Slider(0, core.tileSize.width, core.tileSize.width);
-        Slider tileHeightSlider = new Slider(0, core.tileSize.height, core.tileSize.height);
+        Slider tileWidthSlider = new Slider(0, tileSize.width, tileSize.width);
+        Slider tileHeightSlider = new Slider(0, tileSize.height, tileSize.height);
 
         TextField mainTileGapField = new TextField(Integer.toString(tileGap));
 
         CheckBox mainGridCheckBox = new CheckBox("Show grid");
 
-        ObservableList<String> colSchemes =
+        ObservableList<ColorScheme> colSchemes =
                 FXCollections.observableArrayList(
-                        ColorScheme.DARK.name
+                        ColorScheme.LIGHT,
+                        ColorScheme.DARK
                 );
 
-        ComboBox<String> colorSchemeComboBox = new ComboBox<>(colSchemes);
-        colorSchemeComboBox.setValue("Dark");
+        ComboBox<ColorScheme> colorSchemeComboBox = new ComboBox<>(colSchemes);
+        colorSchemeComboBox.setValue(ColorScheme.DARK);
 
         Label widthLabel = new Label("width:");
         widthLabel.setAlignment(Pos.CENTER);
@@ -122,7 +134,7 @@ public class FxWindow extends Application {
         //Def main panel
         BorderPane mainBorder = new BorderPane();
         StackPane background = new StackPane(canvas);
-        background.setStyle("-fx-background-color: BLACK");
+        background.setStyle("-fx-background-color: " + ColorScheme.getColorName(colorScheme.background)); //FIXME why it not work? no idea
         background.setPadding(new Insets(20, 20, 20, 20));
         mainBorder.setCenter(background);
         mainBorder.setBottom(mainBottomUI);
@@ -152,11 +164,9 @@ public class FxWindow extends Application {
         stage.setResizable(false);
         stage.show();
 
-        //Initiate run thread
-        thread.start();
-
         //Button actions
         editEnterButton.setOnAction(e -> { //Enter button in edit panel, confirms changes to grid size, deletes current state
+            //TODO instead of recreating the entire tilepane everytime, perhaps just change existing one and then show, but dat conversion shit nefarious
             int prevWidth = core.size.width;
             int prevHeight = core.size.height;
 
@@ -235,7 +245,7 @@ public class FxWindow extends Application {
         });
 
         mainConfirmButton.setOnAction(e -> { //Applies current slider and tile gap inputs
-            core.tileSize = new Dimension((int) tileWidthSlider.getValue(), (int) tileHeightSlider.getValue());
+            tileSize = new Dimension((int) tileWidthSlider.getValue(), (int) tileHeightSlider.getValue());
             tileGap = parseInt(mainTileGapField);
             refreshMainTiles();
         });
@@ -271,13 +281,15 @@ public class FxWindow extends Application {
         });
 
         colorSchemeComboBox.valueProperty().addListener((observableValue, s, t1) -> {
-            colorScheme = combo
+            colorScheme = colorSchemeComboBox.getValue();
+            refreshMainTiles();
+            System.out.println(colorScheme.background);
         });
 
         //Override window close request to kill thread if window closed
         stage.setOnCloseRequest(windowEvent -> {
             try {
-                thread.join(1); //TODO let the glorious Thread.destroy(); method return pls
+                core.thread.destroy();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -297,6 +309,7 @@ public class FxWindow extends Application {
 
     public void refreshEditTiles() { //Refreshes edit tiles according to current core attributes
         //FIXME no it fucking doesnt, just clears all data, cbf to fix it rn
+        //TODO again, do not create an entirely new panel, reuse old one instead
         if (editPaneTiles == null) {
             editPaneTiles = new TilePane();
         }
@@ -320,16 +333,16 @@ public class FxWindow extends Application {
         graphics.setFill(colorScheme.tiles);
         graphics.setStroke(colorScheme.grid);
 
-        canvas.setWidth(core.size.width * core.tileSize.width);
-        canvas.setHeight(core.size.height * core.tileSize.height);
+        canvas.setWidth(core.size.width * tileSize.width);
+        canvas.setHeight(core.size.height * tileSize.height);
 
         if (showGrid) {
             for (int i = 0; i <= core.size.height; i++) {
-                graphics.strokeLine(0, i * core.tileSize.height, (int) canvas.getWidth(), i * core.tileSize.height);
+                graphics.strokeLine(0, i * tileSize.height, (int) canvas.getWidth(), i * tileSize.height);
             }
 
             for (int i = 0; i <= core.size.width; i++) {
-                graphics.strokeLine(i * core.tileSize.width, 0, i * core.tileSize.width, (int) canvas.getHeight());
+                graphics.strokeLine(i * tileSize.width, 0, i * tileSize.width, (int) canvas.getHeight());
             }
         }
 
@@ -337,9 +350,9 @@ public class FxWindow extends Application {
             for (int j = 0; j < core.size.width; j++) {
                 if (core.state[i][j]) {
                     graphics.fillRect(
-                            (i * core.tileSize.width) + tileGap + tileOffset.width,
-                            (j * core.tileSize.height) + tileGap + tileOffset.height,
-                            core.tileSize.width - tileGap * 2, core.tileSize.height - tileGap * 2);
+                            (i * tileSize.width) + tileGap + tileOffset.width,
+                            (j * tileSize.height) + tileGap + tileOffset.height,
+                            tileSize.width - tileGap * 2, tileSize.height - tileGap * 2);
                 }
             }
         }
