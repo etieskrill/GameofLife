@@ -65,9 +65,12 @@ public class FxWindow extends Application {
 
         Button tileGapSizePlus = new Button("+");
         Button tileGapSizeMinus = new Button("-");
+        tileGapSizePlus.setPadding(new Insets(5, 10, 5, 10));
+        tileGapSizeMinus.setPadding(new Insets(5, 10, 5, 10));
 
         Label tileGapSizeLabel = new Label(Integer.toString(tileGap));
         tileGapSizeLabel.setAlignment(Pos.CENTER);
+        tileGapSizeLabel.setPadding(new Insets(5));
 
         HBox TileGapBox = new HBox();
         TileGapBox.getChildren().addAll(tileGapSizeMinus, tileGapSizeLabel, tileGapSizePlus);
@@ -83,12 +86,16 @@ public class FxWindow extends Application {
         mainSimSpeedSlider.setMajorTickUnit((double) core.simSpeed / 2);
         mainSimSpeedSlider.setMinorTickCount(core.simSpeed / 20);
         mainSimSpeedSlider.setBlockIncrement((double) core.simSpeed / 10);
+        mainSimSpeedSlider.setSnapToTicks(true);
 
         Button editSaveButton = new Button("Save");
         Button editEnterButton = new Button("Enter");
         Button editClearButton = new Button("Clear");
 
         Slider tileSizeSlider = new Slider(0,tileSize.width, tileSize.width);
+        tileSizeSlider.setShowTickLabels(true);
+        tileSizeSlider.setShowTickMarks(true);
+        tileSizeSlider.setSnapToTicks(true);
 
         TextField mainTileGapField = new TextField(Integer.toString(tileGap));
         mainTileGapField.setPromptText("Must be integer");
@@ -230,9 +237,9 @@ public class FxWindow extends Application {
         });
 
         editSaveButton.setOnAction(e -> { //Save button in edit panel, confirms entered tile config and sets scene to main panel
-            for (int j = 0; j < core.size.width; j++) {
-                for (int i = 0; i < core.size.height; i++) {
-                    core.state[i][j] = ((CheckBox) editPaneTiles.getChildren().get(j * core.size.width + i)).isSelected();
+            for (int i = 0; i < core.size.width; i++) {
+                for (int j = 0; j < core.size.height; j++) {
+                    core.state[j][i] = ((CheckBox) editPaneTiles.getChildren().get(i * core.size.width + j)).isSelected();
                 } //TODO wtf it dond work for non-squares
             }
 
