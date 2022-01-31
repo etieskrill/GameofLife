@@ -55,7 +55,6 @@ public class FxWindow extends Application {
 
         //Ui elements
         Button mainEditButton = new Button("Edit");
-        Button mainConfirmButton = new Button("Confirm");
 
         Button mainNextGenButton = new Button("Next Generation");
         Button mainRunButton = new Button("Run");
@@ -78,8 +77,7 @@ public class FxWindow extends Application {
         Button editEnterButton = new Button("Enter");
         Button editClearButton = new Button("Clear");
 
-        Slider tileWidthSlider = new Slider(0, tileSize.width, tileSize.width);
-        Slider tileHeightSlider = new Slider(0, tileSize.height, tileSize.height);
+        Slider tileSizeSlider = new Slider(0,tileSize.width, tileSize.width);
 
         TextField mainTileGapField = new TextField(Integer.toString(tileGap));
 
@@ -123,7 +121,7 @@ public class FxWindow extends Application {
         mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
         mainBottomUI.setSpacing(10);
         mainBottomUI.setAlignment(Pos.CENTER);
-        mainBottomUI.getChildren().addAll(mainEditButton, tileWidthSlider, tileHeightSlider, mainTileGapField, mainConfirmButton);
+        mainBottomUI.getChildren().addAll(mainEditButton, tileSizeSlider, mainTileGapField);
 
         HBox editBottomUI = new HBox();
         editBottomUI.setPadding(new Insets(20, 20, 20, 20));
@@ -244,8 +242,8 @@ public class FxWindow extends Application {
             stage.setScene(edit);
         });
 
-        mainConfirmButton.setOnAction(e -> { //Applies current slider and tile gap inputs
-            tileSize = new Dimension((int) tileWidthSlider.getValue(), (int) tileHeightSlider.getValue());
+        tileSizeSlider.valueProperty().addListener((observableValue, number, t1) -> {
+            tileSize = new Dimension((int) tileSizeSlider.getValue(), (int) tileSizeSlider.getValue());
             tileGap = parseInt(mainTileGapField);
             refreshMainTiles();
         });
@@ -355,6 +353,15 @@ public class FxWindow extends Application {
                             tileSize.width - tileGap * 2, tileSize.height - tileGap * 2);
                 }
             }
+        }
+    }
+    private static boolean IsInt(TextField input, String message){ //checks in input is integer
+        try{
+            int age = Integer.parseInt(input.getText());
+            return true;
+        }catch(NumberFormatException e){
+            System.out.println("Error: " +  message + " is not a Number");
+            return false;
         }
     }
 
