@@ -63,6 +63,17 @@ public class FxWindow extends Application {
         mainStopButton.managedProperty().bind(mainRunButton.visibleProperty());
         mainStopButton.setDisable(true);
 
+        Button tileGapSizePlus = new Button("+");
+        Button tileGapSizeMinus = new Button("-");
+
+        Label tileGapSizeLabel = new Label(Integer.toString(tileGap));
+        tileGapSizeLabel.setAlignment(Pos.CENTER);
+
+        HBox TileGapBox = new HBox();
+        TileGapBox.getChildren().addAll(tileGapSizeMinus, tileGapSizeLabel, tileGapSizePlus);
+        TileGapBox.setSpacing(5);
+
+
         HBox mainRunBox = new HBox();
         mainRunBox.getChildren().addAll(mainRunButton, mainStopButton);
 
@@ -122,7 +133,7 @@ public class FxWindow extends Application {
         mainBottomUI.setPadding(new Insets(20, 20, 20, 20));
         mainBottomUI.setSpacing(10);
         mainBottomUI.setAlignment(Pos.CENTER);
-        mainBottomUI.getChildren().addAll(mainEditButton, tileSizeSlider, mainTileGapField);
+        mainBottomUI.getChildren().addAll(mainEditButton, tileSizeSlider, TileGapBox);
 
         HBox editBottomUI = new HBox();
         editBottomUI.setPadding(new Insets(20, 20, 20, 20));
@@ -267,6 +278,17 @@ public class FxWindow extends Application {
             core.running = false;
             mainRunBox.getChildren().get(0).setDisable(false);
             mainRunBox.getChildren().get(1).setDisable(true);
+        });
+
+        tileGapSizeMinus.setOnAction(e ->{
+            tileGap+=1;
+            tileGapSizeLabel.setText(Integer.toString(tileGap));
+            refreshMainTiles();
+        });
+        tileGapSizePlus.setOnAction(e ->{
+            tileGap-=1;
+            tileGapSizeLabel.setText(Integer.toString(tileGap));
+            refreshMainTiles();
         });
 
         mainGridCheckBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
