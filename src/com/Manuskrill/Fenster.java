@@ -4,10 +4,13 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
@@ -133,5 +136,23 @@ public class Fenster extends Application /*implements EventHandler<ActionEvent>*
             System.out.println("Error: " +  message + " is not a Number");
             return false;
         }
+    }
+    private void installEventHandler(final Node keyNode) {
+        // handler for enter key press / release events, other keys are
+        // handled by the parent (keyboard) node handler
+        final EventHandler<KeyEvent> keyEventHandler =
+                new EventHandler<KeyEvent>() {
+                    public void handle(final KeyEvent keyEvent) {
+                        if (keyEvent.getCode() == KeyCode.ENTER) {
+                            setPressed(keyEvent.getEventType()
+                                    == KeyEvent.KEY_PRESSED);
+
+                            keyEvent.consume();
+                        }
+                    }
+                };
+
+        keyNode.setOnKeyPressed(keyEventHandler);
+        keyNode.setOnKeyReleased(keyEventHandler);
     }
 }
