@@ -65,8 +65,6 @@ public class FxWindow extends Application {
 
         Button tileGapSizePlus = new Button("+");
         Button tileGapSizeMinus = new Button("-");
-        tileGapSizePlus.setPadding(new Insets(5, 10, 5, 10));
-        tileGapSizeMinus.setPadding(new Insets(5, 10, 5, 10));
 
         Label tileGapSizeLabel = new Label(Integer.toString(tileGap));
         tileGapSizeLabel.setAlignment(Pos.CENTER);
