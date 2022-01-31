@@ -68,6 +68,7 @@ public class FxWindow extends Application {
 
         Label tileGapSizeLabel = new Label(Integer.toString(tileGap));
         tileGapSizeLabel.setAlignment(Pos.CENTER);
+        tileGapSizeLabel.setPadding(new Insets(4, 0, 0, 0));
 
         HBox TileGapBox = new HBox();
         TileGapBox.getChildren().addAll(mainTileGapSizeMinus, tileGapSizeLabel, mainTileGapSizePlus);
