@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 
 public enum ColorScheme {
 
-    LIGHT("Light", Color.WHITE, Color.LIGHTGRAY, Color.GRAY, Color.LIGHTGRAY),
+    LIGHT("Light", Color.WHITE, Color.LIGHTGRAY, Color.BLACK, Color.LIGHTGRAY),
     //DARCULA,
     DARK("Dark", Color.BLACK, Color.DARKGRAY, Color.LIGHTGRAY, Color.DARKGRAY.darker().darker());
 

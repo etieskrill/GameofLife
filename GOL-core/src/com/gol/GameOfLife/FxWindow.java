@@ -38,16 +38,16 @@ public class FxWindow extends Application {
     //Attributes only concerning graphic interface
     public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public String title = "Game of Life";
-    public static boolean showGrid = false;
+    public static boolean showGrid = true;
     public static int tileGap = 1;
     public static Dimension tileSize = new Dimension(17, 17);
     public static Dimension tileOffset = new Dimension(0, 0);
-    public static ColorScheme colorScheme = ColorScheme.DARK;
+    public static ColorScheme colorScheme = ColorScheme.LIGHT;
 
-    static GOLcore core = new GOLcore(true);
+    public static GOLcore core = new GOLcore(true);
 
-    TilePane editPaneTiles;
-    static Canvas canvas = new Canvas(core.size.width * tileSize.width, core.size.height * tileSize.height);
+    public TilePane editPaneTiles;
+    public static Canvas canvas = new Canvas(core.size.width * tileSize.width, core.size.height * tileSize.height);
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -302,8 +302,8 @@ public class FxWindow extends Application {
 
         colorSchemeComboBox.valueProperty().addListener((observableValue, s, t1) -> {
             colorScheme = colorSchemeComboBox.getValue();
+            background.setStyle("-fx-background-color: " + ColorScheme.getColorName(colorScheme.background));
             refreshMainTiles();
-            System.out.println(colorScheme.background);
         });
 
         //Override window close request to kill thread if window closed
