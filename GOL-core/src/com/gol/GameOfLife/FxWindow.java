@@ -94,6 +94,7 @@ public class FxWindow extends Application {
         mainTileGapField.setPromptText("Must be integer");
 
         CheckBox mainGridCheckBox = new CheckBox("Show grid");
+        mainGridCheckBox.setSelected(showGrid);
 
         ObservableList<ColorScheme> colSchemes =
                 FXCollections.observableArrayList(
@@ -102,7 +103,7 @@ public class FxWindow extends Application {
                 );
 
         ComboBox<ColorScheme> colorSchemeComboBox = new ComboBox<>(colSchemes);
-        colorSchemeComboBox.setValue(ColorScheme.DARK);
+        colorSchemeComboBox.setValue(colorScheme);
 
         Label widthLabel = new Label("width:");
         widthLabel.setAlignment(Pos.CENTER);
