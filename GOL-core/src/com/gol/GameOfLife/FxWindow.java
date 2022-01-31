@@ -226,7 +226,7 @@ public class FxWindow extends Application {
         editSaveButton.setOnAction(e -> { //Save button in edit panel, confirms entered tile config and sets scene to main panel
             for (int j = 0; j < core.size.width; j++) {
                 for (int i = 0; i < core.size.height; i++) {
-                    core.state[i][j] = ((CheckBox) editPaneTiles.getChildren().get(j * core.size.height + i)).isSelected();
+                    core.state[i][j] = ((CheckBox) editPaneTiles.getChildren().get(j * core.size.width + i)).isSelected();
                 } //TODO wtf it dond work for non-squares
             }
 

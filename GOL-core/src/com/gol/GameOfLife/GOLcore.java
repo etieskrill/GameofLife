@@ -71,4 +71,8 @@ public class GOLcore {
         return nextGen;
     }
 
+    public boolean[][] nextGeneration(boolean[][] currentGen, int gens) {
+        return null;
+    }
+
 }
