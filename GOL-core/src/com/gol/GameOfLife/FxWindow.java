@@ -245,7 +245,6 @@ public class FxWindow extends Application {
 
         tileSizeSlider.valueProperty().addListener((observableValue, number, t1) -> {
             tileSize = new Dimension((int) tileSizeSlider.getValue(), (int) tileSizeSlider.getValue());
-            tileGap = parseInt(mainTileGapField);
             refreshMainTiles();
         });
 
@@ -354,15 +353,6 @@ public class FxWindow extends Application {
                             tileSize.width - tileGap * 2, tileSize.height - tileGap * 2);
                 }
             }
-        }
-    }
-    private static boolean IsInt(TextField input, String message){ //checks in input is integer
-        try{
-            int age = Integer.parseInt(input.getText());
-            return true;
-        }catch(NumberFormatException e){
-            System.out.println("Error: " +  message + " is not a Number");
-            return false;
         }
     }
 
