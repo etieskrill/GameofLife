@@ -72,7 +72,11 @@ public class GOLcore {
     }
 
     public boolean[][] nextGeneration(boolean[][] currentGen, int gens) {
-        return null;
+        for (int i = 0; i < gens; i++) {
+            currentGen = nextGeneration(currentGen);
+        }
+
+        return currentGen;
     }
 
 }

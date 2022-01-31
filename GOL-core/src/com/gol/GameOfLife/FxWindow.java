@@ -80,6 +80,7 @@ public class FxWindow extends Application {
         Slider tileSizeSlider = new Slider(0,tileSize.width, tileSize.width);
 
         TextField mainTileGapField = new TextField(Integer.toString(tileGap));
+        mainTileGapField.setPromptText("Must be integer");
 
         CheckBox mainGridCheckBox = new CheckBox("Show grid");
 
