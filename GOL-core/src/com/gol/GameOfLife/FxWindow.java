@@ -215,11 +215,6 @@ public class FxWindow extends Application {
                     core.size.height = prevHeight;
 
                     core.state = new boolean[core.size.height][core.size.width];
-                    for (int i = 0; i < core.size.height; i++) {
-                        for (int j = 0; j < core.size.width; j++) {
-                            core.state[i][j] = false;
-                        }
-                    }
 
                     refreshEditTiles();
                     widthField.setText(Integer.toString(core.size.width));
