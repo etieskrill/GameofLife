@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -156,6 +157,22 @@ public class FxWindow extends Application {
         refreshMainTiles();
 
         Scene main = new Scene(mainBorder);
+
+        main.setOnKeyPressed(new EventHandler<KeyEvent>() { //in which scene the keylistener should be
+            @Override
+            public void handle(KeyEvent event) { //normal eventhandler
+
+                if(event.getCode() == KeyCode.S){ //.getCode() is the key currently being pressed
+                    int prevWidth = core.size.width;
+                    int prevHeight = core.size.height;
+                }
+                System.out.println(event.getCode()); //just prints out what key is being pressed
+
+            }
+        });
+
+
+
 
         //Def edit panel
         refreshEditTiles();
