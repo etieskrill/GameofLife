@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
@@ -189,6 +190,9 @@ public class FxWindow extends Application {
         Scene edit = new Scene(editBorder);
         edit.getStylesheets().add(String.valueOf(getClass().getResource("/style.css")));
 
+        Paint p = Paint.valueOf("black");
+        main.setFill(p);                //FIXME should fill the background color as black.
+
         //Choose scene
         stage.setScene(main);
         stage.setResizable(false);
@@ -215,6 +219,48 @@ public class FxWindow extends Application {
                     core.state[i][j] = false;
                 }
             }
+            main.setOnKeyPressed(new EventHandler<KeyEvent>() { //FIXME Space wird noni entdeckt, mues mi aber chli me ufs geo konzentriere
+                @Override
+                public void handle(KeyEvent event) { //normal eventhandler
+
+                    if(event.getCode() == KeyCode.SPACE){ //.getCode() is the key currently being pressed
+                        if(core.running){
+                            core.running=false;
+                        }
+                        else {
+                            core.running = false;
+                        }
+                    }
+                    System.out.println(event.getCode()); //just prints out what key is being pressed
+
+                }
+            });
+
+            main.setOnKeyPressed(new EventHandler<KeyEvent>() { //in which scene the keylistener should be //FIXME sött no mit dr edit scene gmacht werde, geit aber noni
+                @Override
+                public void handle(KeyEvent event) { //normal eventhandler
+
+                    if(event.getCode() == KeyCode.S){ //.getCode() is the key currently being pressed
+                        int prevWidth = core.size.width;
+                        int prevHeight = core.size.height;
+
+                        core.size.width = parseInt(widthField);
+                        core.size.height = parseInt(heightField);
+
+                        editPaneTiles.setPrefColumns(core.size.width);
+                        editPaneTiles.setPrefRows(core.size.height);
+
+                        core.state = new boolean[core.size.height][core.size.width];
+                        for (int i = 0; i < core.size.height; i++) {
+                            for (int j = 0; j < core.size.width; j++) {
+                                core.state[i][j] = false;
+                            }
+                        }
+                    }
+                    System.out.println(event.getCode()); //just prints out what key is being pressed
+
+                }
+            });
 
             refreshEditTiles();
             widthField.setText(Integer.toString(core.size.width));
