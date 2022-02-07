@@ -233,7 +233,7 @@ public class FxWindow extends Application {
             if (stage.getHeight() > screenSize.height - 2 || stage.getWidth() > screenSize.width - 2) {
                 Alert alert = new Alert(
                         Alert.AlertType.WARNING,
-                        "Window size exceeds screen size. Keep changes?",
+                        "Window size exceeds screen size and may cause unstable behaviour. Keep changes?",
                         ButtonType.APPLY,
                         ButtonType.CANCEL
                 );
