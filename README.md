@@ -13,3 +13,8 @@ Ca, 2h Javafx gelernt und dokumentiert (Fenster, AlertBox, Window)
 10.01.2022 Data validation, checkboxes gelernt
 
 yall ever eaten some BBBEEEEANNNNNSSS
+
+*me after doing literally all the work and much more*
+aah, my back!
+
+*me wondering why this repository even still belongs to m4anuel*
