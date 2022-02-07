@@ -1,0 +1,12 @@
+<list>
+  <car>
+    <brand>Fiat</brand>
+    <price>100.5</price>
+    <gears>3</gears>
+  </car>
+  <car>
+    <brand>Mercedes</brand>
+    <price>9999.2</price>
+    <gears>20</gears>
+  </car>
+</list>

@@ -341,6 +341,7 @@ public class FxWindow extends Application {
         });
 
         main.setOnKeyPressed(new EventHandler<KeyEvent>() { //FIXME Space wird noni entdeckt, mues mi aber chli me ufs geo konzentriere
+            //PROPOSE chönnts sy wüu space wines "enter" oder "select" zeut, aso we zb e button blau umrandet (selected) isch
             @Override
             public void handle(KeyEvent event) { //normal eventhandler
 
