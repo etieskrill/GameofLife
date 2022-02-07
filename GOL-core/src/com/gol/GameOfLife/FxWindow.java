@@ -410,6 +410,7 @@ public class FxWindow extends Application {
         }
 
         HashSet<CheckBox> checkBoxes = new HashSet<>();
+
         for (int i = 0; i < core.size.height; i++) {
             for (int j = 0; j < core.size.width; j++) {
                 CheckBox checkBox = new CheckBox();
